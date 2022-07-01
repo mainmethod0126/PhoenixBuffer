@@ -1,13 +1,16 @@
 package phoenixbuffer;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.function.Consumer;
 
 /* 
  * What is Phoenix? : https://ko.wikipedia.org/wiki/%EB%B6%88%EC%82%AC%EC%A1%B0
  */
 public class PhoenixBuffer<T> {
+
+    public static interface Funtions<T> extends Ignitable<T>, Addable<T>, Cleanable<T> {
+    }
 
     public static class Life {
         private long size;
@@ -32,46 +35,35 @@ public class PhoenixBuffer<T> {
 
     private Life life;
     private T buffer;
-    private Consumer<T> ignitionTask;
-    private Consumer<T> cleanup;
-    private Consumer<T> addFunc;
+    private Funtions<T> functions;
+    private TimerTask task;
 
-    public PhoenixBuffer(/*Class<T> bufferClass,*/ Life life, Consumer<T> ignitionTask, Consumer<T> cleanup,
-            Consumer<T> add) {
+    public PhoenixBuffer(T buffer, Life life, Funtions<T> functions)
+            throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
+            NoSuchMethodException, SecurityException {
         this.life = life;
-        this.ignitionTask = ignitionTask;
-        this.cleanup = cleanup;
-        this.addFunc = add;
+        this.functions = functions;
+        this.buffer = buffer;
 
-        TimerTask task = new TimerTask() {
+        this.task = new TimerTask() {
             @Override
             public void run() {
-                ignitionTask.accept(buffer);
-                cleanup.accept(buffer);
+                functions.ignitionTask(buffer);
+                functions.clean(buffer);
             }
         };
 
         if (this.life != null) {
-            Life.getTimer().schedule(task, life.time);
+            Life.getTimer().schedule(this.task, 1, life.time);
         }
     }
 
-    public synchronized void add() {
-        if (addFunc != null) {
-            this.addFunc.accept(buffer);
-        }
+    public synchronized void add(Object... params) {
+        functions.add(buffer, params);
     }
 
     public synchronized void clean() {
-        if (cleanup != null) {
-            this.cleanup.accept(buffer);
-        }
-    }
-
-    public synchronized void ignition() {
-        if (cleanup != null) {
-            this.ignitionTask.accept(buffer);
-        }
+        functions.clean(buffer);
     }
 
     public long getMaxSize() {
@@ -80,5 +72,9 @@ public class PhoenixBuffer<T> {
 
     public long getTimeInterval() {
         return this.life.time;
+    }
+
+    public T getBuffer() {
+        return this.buffer;
     }
 }
