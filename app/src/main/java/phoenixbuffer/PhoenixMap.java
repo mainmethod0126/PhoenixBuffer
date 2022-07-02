@@ -13,6 +13,7 @@ public class PhoenixMap<K, V> {
     private Ignitable<Map<K, V>> ignitable;
     private Map<K, V> buffer;
 
+    @SuppressWarnings("unchecked")
     public PhoenixMap(long size, long time, Ignitable<Map<K, V>> ignitable)
             throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
             NoSuchMethodException, SecurityException {
