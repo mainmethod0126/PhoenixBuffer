@@ -4,11 +4,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import phoenixbuffer.interfaces.Ignitable;
+
 public class PhoenixMap<K, V> {
 
     private PhoenixBuffer<Map<K, V>> phoenixBuffer;
 
-    private Ignitable ignitable;
+    private Ignitable<Map<K, V>> ignitable;
     private Map<K, V> buffer;
 
     public PhoenixMap(long size, long time, Ignitable<Map<K, V>> ignitable)
@@ -16,20 +18,21 @@ public class PhoenixMap<K, V> {
             NoSuchMethodException, SecurityException {
 
         this.ignitable = ignitable;
+        this.buffer = new HashMap<>();
 
         new PhoenixBuffer.Life(size, time);
         phoenixBuffer = new PhoenixBuffer<>(
-                buffer = new HashMap<>(),
+                buffer,
                 new PhoenixBuffer.Life(
                         size, time),
                 new PhoenixBuffer.Funtions<Map<K, V>>() {
                     @Override
-                    public void ignitionTask(Map<K, V> buffer, Object... params) {
+                    public synchronized void ignitionTask(Map<K, V> buffer, Object... params) {
                         ignitable.ignitionTask(buffer, params);
                     }
 
                     @Override
-                    public void add(Map<K, V> buffer, Object... params) {
+                    public synchronized void add(Map<K, V> buffer, Object... params) {
                         if (params[0] != null) {
                             K key = (K) params[0];
                             if (params[1] != null) {
@@ -40,7 +43,7 @@ public class PhoenixMap<K, V> {
                     }
 
                     @Override
-                    public void clean(Map<K, V> buffer) {
+                    public synchronized void clean(Map<K, V> buffer) {
                         buffer.clear();
                     }
                 });

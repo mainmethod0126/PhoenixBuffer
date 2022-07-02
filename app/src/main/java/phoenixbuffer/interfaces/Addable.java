@@ -1,4 +1,4 @@
-package phoenixbuffer;
+package phoenixbuffer.interfaces;
 
 public interface Addable<T> {
 

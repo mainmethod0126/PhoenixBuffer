@@ -4,6 +4,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import phoenixbuffer.interfaces.Addable;
+import phoenixbuffer.interfaces.Cleanable;
+import phoenixbuffer.interfaces.Ignitable;
+
 /* 
  * What is Phoenix? : https://ko.wikipedia.org/wiki/%EB%B6%88%EC%82%AC%EC%A1%B0
  */
@@ -72,9 +76,5 @@ public class PhoenixBuffer<T> {
 
     public long getTimeInterval() {
         return this.life.time;
-    }
-
-    public T getBuffer() {
-        return this.buffer;
     }
 }
