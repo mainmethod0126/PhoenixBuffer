@@ -28,8 +28,8 @@ public class PhoenixMap<K, V> {
                         size, time),
                 new PhoenixBuffer.Funtions<Map<K, V>>() {
                     @Override
-                    public synchronized void ignitionTask(Map<K, V> buffer, Object... params) {
-                        ignitable.ignitionTask(buffer, params);
+                    public synchronized void ignitionTask(Map<K, V> buffer) {
+                        ignitable.ignitionTask(buffer);
                     }
 
                     @Override

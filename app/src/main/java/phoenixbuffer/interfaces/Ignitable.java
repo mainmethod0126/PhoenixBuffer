@@ -1,6 +1,7 @@
 package phoenixbuffer.interfaces;
 
+@FunctionalInterface
 public interface Ignitable<T> {
 
-    public void ignitionTask(T buffer, Object... params);
+    public void ignitionTask(T buffer);
 }
