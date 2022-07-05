@@ -25,7 +25,7 @@ public class PhoenixMapTest {
         });
 
         for (int i = 0; i < 10; i++) {
-            phoenixMap.add("testNo : " + i, i);
+            phoenixMap.put("testNo : " + i, i);
             System.out.println("testNo : " + i);
         }
     }

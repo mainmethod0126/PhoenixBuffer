@@ -55,7 +55,7 @@ public class PhoenixMap<K, V> {
                 });
     }
 
-    public void add(K key, V value) {
+    public void put(K key, V value) {
         if (phoenixBuffer.isFull()) {
             phoenixBuffer.ignitionTask();
         }
