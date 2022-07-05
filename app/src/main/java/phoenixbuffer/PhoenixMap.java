@@ -47,14 +47,27 @@ public class PhoenixMap<K, V> {
                     public synchronized void clean(Map<K, V> buffer) {
                         buffer.clear();
                     }
+
+                    @Override
+                    public boolean isFull(Map<K, V> buffer) {
+                        return buffer.size() >= size;
+                    }
                 });
     }
 
-    public synchronized void add(K key, V value) {
+    public void add(K key, V value) {
+        if (phoenixBuffer.isFull()) {
+            phoenixBuffer.ignitionTask();
+        }
+        
         phoenixBuffer.add(key, value);
     }
 
-    public synchronized void clean() {
+    public void clean() {
         phoenixBuffer.clean();
+    }
+
+    public void cancel() {
+        phoenixBuffer.cancel();
     }
 }

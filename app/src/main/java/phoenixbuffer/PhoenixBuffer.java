@@ -6,6 +6,7 @@ import java.util.TimerTask;
 
 import phoenixbuffer.interfaces.Addable;
 import phoenixbuffer.interfaces.Cleanable;
+import phoenixbuffer.interfaces.FullCheck;
 import phoenixbuffer.interfaces.Ignitable;
 
 /* 
@@ -13,7 +14,7 @@ import phoenixbuffer.interfaces.Ignitable;
  */
 public class PhoenixBuffer<T> {
 
-    public static interface Funtions<T> extends Ignitable<T>, Addable<T>, Cleanable<T> {
+    public static interface Funtions<T> extends Ignitable<T>, Addable<T>, Cleanable<T>, FullCheck<T> {
     }
 
     public static class Life {
@@ -25,6 +26,15 @@ public class PhoenixBuffer<T> {
             this.size = size;
             this.time = time;
         }
+
+        public long getSize() {
+            return this.size;
+        }
+
+        public long getTime() {
+            return this.time;
+        }
+
 
         /*
          * Timer는 전역객체로 하나만 생성하여 범용으로 사용합니다.
@@ -40,7 +50,9 @@ public class PhoenixBuffer<T> {
     private Life life;
     private T buffer;
     private Funtions<T> functions;
-    private TimerTask task;
+    private TimerTask lifeTimeOverTask;
+    private Object lock;
+
 
     public PhoenixBuffer(T buffer, Life life, Funtions<T> functions)
             throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
@@ -48,26 +60,49 @@ public class PhoenixBuffer<T> {
         this.life = life;
         this.functions = functions;
         this.buffer = buffer;
+        this.lock = new Object();
 
-        this.task = new TimerTask() {
+        this.lifeTimeOverTask = new TimerTask() {
             @Override
             public void run() {
-                functions.ignitionTask(buffer);
-                functions.clean(buffer);
+                basicFeaturesOfThePhoenix();
             }
         };
 
         if (this.life != null) {
-            Life.getTimer().schedule(this.task, 1, life.time);
+            Life.getTimer().scheduleAtFixedRate(this.lifeTimeOverTask, 0, life.time);
         }
     }
 
-    public synchronized void add(Object... params) {
-        functions.add(buffer, params);
+    private void basicFeaturesOfThePhoenix() {
+        synchronized(this.lock){
+            this.ignitionTask();
+            this.clean();
+        }
     }
 
-    public synchronized void clean() {
-        functions.clean(buffer);
+    public boolean isFull() {
+        synchronized (this.lock) {
+            return functions.isFull(buffer);
+        }
+    }
+
+    public void ignitionTask() {
+        synchronized (this.lock) {
+            functions.ignitionTask(buffer);
+        }
+    }
+
+    public void add(Object... params) {
+        synchronized (this.lock) {
+            functions.add(buffer, params);
+        }
+    }
+
+    public void clean() {
+        synchronized (this.lock) {
+            functions.clean(buffer);
+        }
     }
 
     public long getMaxSize() {
@@ -76,5 +111,13 @@ public class PhoenixBuffer<T> {
 
     public long getTimeInterval() {
         return this.life.time;
+    }
+
+    public Life getLife() {
+        return this.life;
+    }
+
+    public synchronized void cancel() {
+        lifeTimeOverTask.cancel();
     }
 }
