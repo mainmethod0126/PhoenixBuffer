@@ -20,11 +20,12 @@ public class PhoenixBuffer<T> {
     public static class Life {
         private long size;
         private long time;
-        private static Timer timer;
+        private Timer timer;
 
         public Life(long size, long time) {
             this.size = size;
             this.time = time;
+            this.timer = new Timer("Life Timer");
         }
 
         public long getSize() {
@@ -35,14 +36,7 @@ public class PhoenixBuffer<T> {
             return this.time;
         }
 
-
-        /*
-         * Timer는 전역객체로 하나만 생성하여 범용으로 사용합니다.
-         */
-        public static Timer getTimer() {
-            if (timer == null) {
-                timer = new Timer("Life Timer");
-            }
+        public Timer getTimer() {
             return timer;
         }
     }
@@ -70,7 +64,7 @@ public class PhoenixBuffer<T> {
         };
 
         if (this.life != null) {
-            Life.getTimer().scheduleAtFixedRate(this.lifeTimeOverTask, 0, life.time);
+            life.getTimer().scheduleAtFixedRate(this.lifeTimeOverTask, 0, life.time);
         }
     }
 
