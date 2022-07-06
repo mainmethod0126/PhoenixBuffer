@@ -1,12 +1,14 @@
 package phoenixbuffer;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import phoenixbuffer.interfaces.Ignitable;
 
-public class PhoenixMap<K, V> {
+public class PhoenixMap<K, V> implements Map<K,V>{
 
     private PhoenixBuffer<Map<K, V>> phoenixBuffer;
 
@@ -55,19 +57,116 @@ public class PhoenixMap<K, V> {
                 });
     }
 
-    public void put(K key, V value) {
+    public void cancel() {
+        phoenixBuffer.cancel();
+    }
+
+    /*
+     * It is not implemented and cannot be used.
+     */
+    @Override
+    public int size() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    /*
+     * It is not implemented and cannot be used.
+     */
+    @Override
+    public boolean isEmpty() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /*
+     * It is not implemented and cannot be used.
+     */
+    @Override
+    public boolean containsKey(Object key) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /*
+     * It is not implemented and cannot be used.
+     */
+    @Override
+    public boolean containsValue(Object value) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /*
+     * It is not implemented and cannot be used.
+     */
+    @Override
+    public V get(Object key) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public V put(K key, V value) {
         if (phoenixBuffer.isFull()) {
             phoenixBuffer.ignitionTask();
         }
-        
+
         phoenixBuffer.add(key, value);
+
+        return value;
     }
 
-    public void clean() {
+    /*
+     * It is not implemented and cannot be used.
+     */
+    @Override
+    public V remove(Object key) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /*
+     * It is not implemented and cannot be used.
+     */
+    @Override
+    public void putAll(Map<? extends K, ? extends V> m) {
+        // TODO Auto-generated method stub
+
+    }
+
+    
+    @Override
+    public void clear() {
+        // TODO Auto-generated method stub
         phoenixBuffer.clean();
+
     }
 
-    public void cancel() {
-        phoenixBuffer.cancel();
+    /*
+     * It is not implemented and cannot be used.
+     */
+    @Override
+    public Set<K> keySet() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /*
+     * It is not implemented and cannot be used.
+     */
+    @Override
+    public Collection<V> values() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /*
+     * It is not implemented and cannot be used.
+     */
+    @Override
+    public Set<Entry<K, V>> entrySet() {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
